@@ -10,8 +10,8 @@ class Post extends Model
 {
     use SoftDeletes;
 
-    protected $fillable
-        = [
+    protected $fillable =
+        [
             'user_id',
             'title',
             'body'
@@ -19,6 +19,6 @@ class Post extends Model
 
     public function user()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'user_id');
     }
 }
