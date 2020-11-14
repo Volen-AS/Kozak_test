@@ -45,4 +45,9 @@ class User extends Authenticatable
     {
         return $this->hasMany(User_mute::class, 'user_id');
     }
+
+    public function arrayMutesUsers()
+    {
+         return $this->mutes()->pluck('mute_id');
+    }
 }
