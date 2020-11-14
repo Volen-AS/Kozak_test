@@ -8,7 +8,9 @@ use Carbon\Carbon;
 
 class PostsRepository extends CoreRepository
 {
-
+    /** @var \Illuminate\Support\Collection
+     *blocks users
+     */
     private $mutesUsers;
 
     public function __construct()
@@ -26,10 +28,10 @@ class PostsRepository extends CoreRepository
     }
 
     /**
-     *if not posts
-     *@return array
+     *if not posts in cache put in redis cache
+     *@return array with keys 'latest', 'oldest', 'rand'
      */
-    public function getTargetPostsWithCache(){
+    public function getTargetPostsWithCachePaginate(){
 
         $cacheKey = "{$this->getCacheKey(Auth::user()->email)}.posts";
 
@@ -37,7 +39,7 @@ class PostsRepository extends CoreRepository
             ->remember($cacheKey, Carbon::now()->addMinutes(15), function (){
                 return ['latest'=> $this->getLatestPostsWithPaginate(),
                         'oldest' => $this->getOldestPostsWithPaginate(),
-                        '$rand' => $this->getRandPostsWithPaginate()
+                        'rand' => $this->getRandPostsWithPaginate()
                     ];
             });
     }
@@ -53,6 +55,7 @@ class PostsRepository extends CoreRepository
         } catch ( \Exception $e){
             return $e->getMessage();
         }
+       // dd($posts);
         return $posts;
     }
 
@@ -83,7 +86,7 @@ class PostsRepository extends CoreRepository
     }
 
     /**
-     * @param string
+     * @param string  use user->email
      * @return string md5('string')
      */
     protected function getCacheKey($name)
